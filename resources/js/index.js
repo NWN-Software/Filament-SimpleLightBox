@@ -3,21 +3,24 @@ import fslightbox from 'fslightbox';
 window.fslightbox = fslightbox;
 
 window.SimpleLightBox = {
-    getViewerURL(url) {
+    getViewerURL(url, extension = null) {
         // https://gist.github.com/theel0ja/b9e44a961f892ccf43e217ab74b9417b
         // Extract the file extension
-        let extension = url.split('.').pop();
+
+        if (!extension) {
+            extension = url.split('.').pop();
+        }
 
         switch (extension) {
             case 'pdf':
-                return `https://docs.google.com/viewer?url=${url}&embedded=true`;
+                return `https://docs.google.com/a/bouwflow.be/viewer?url=${url}&embedded=true`;
             case 'doc':
             case 'docx':
             case 'xls':
             case 'xlsx':
             case 'ppt':
             case 'pptx':
-                return `https://view.officeapps.live.com/op/embed.aspx?src=${url}`;
+                return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
             default:
                 return url;
         }
@@ -37,11 +40,11 @@ window.SimpleLightBox = {
 
         return null;
     },
-    createIframe(url) {
+    createIframe(url, extension) {
         // Create a new iframe element
         document.getElementById("tmp-iframe")?.remove();
         let iframe = document.createElement('iframe');
-        iframe.src = this.getViewerURL(url);
+        iframe.src = this.getViewerURL(url, extension);
         iframe.id = "tmp-iframe";
         iframe.className = "fslightbox-source";
         iframe.frameBorder = "0";
@@ -50,32 +53,16 @@ window.SimpleLightBox = {
         iframe.setAttribute("allowFullScreen", "");
         document.body.appendChild(iframe);
     },
-    open(e, url) {
-        e.preventDefault();
+    open(url, extension = null) {
         const lightbox = new FsLightbox();
         if (url !== undefined) {
-            if (url !== this.getViewerURL(url)) {
-                this.createIframe(url);
-                lightbox.props.sources = [document.getElementById("tmp-iframe")];
-                lightbox.props.onClose = function(instance) {
-                    document.getElementById("tmp-iframe")?.remove();
-                }
-                lightbox.open();
-                return;
+            this.createIframe(url, extension);
+            lightbox.props.sources = [document.getElementById("tmp-iframe")];
+            lightbox.props.onClose = function(instance) {
+                document.getElementById("tmp-iframe")?.remove();
             }
-        }
-
-        // Multiple images
-        let multipleURL = this.getMultipleImgURL(e.target);
-        if (multipleURL != null && multipleURL.length > 0) {
-            lightbox.props.sources = multipleURL;
             lightbox.open();
             return;
-        }
-
-        if (e.target.src !== undefined) {
-            lightbox.props.sources = [e.target.src];
-            lightbox.open();
         }
     }
 }
