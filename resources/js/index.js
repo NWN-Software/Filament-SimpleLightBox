@@ -12,8 +12,8 @@ window.SimpleLightBox = {
         }
 
         switch (extension) {
-            case 'pdf':
-                return `https://docs.google.com/a/bouwflow.be/viewer?url=${url}&embedded=true`;
+            // case 'pdf':
+            //     return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
             case 'doc':
             case 'docx':
             case 'xls':
