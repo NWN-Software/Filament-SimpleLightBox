@@ -43,10 +43,23 @@ window.SimpleLightBox = {
     createIframe(url, extension) {
         // Create a new iframe element
         document.getElementById("tmp-iframe")?.remove();
+        
+        // For image files, use an img tag with object-fit: contain
+        if(['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(extension?.toLowerCase())) {
+            let img = document.createElement('img');
+            img.src = url;
+            img.id = "tmp-iframe"; // keep same ID for consistency with your other code
+            img.className = "fslightbox-source fslightbox-opacity-1";
+            img.style = "width: 80vw; height: 80vh; object-fit: contain;";
+            document.body.appendChild(img);
+            return;
+        }
+        
+        // For other files, use iframe as before
         let iframe = document.createElement('iframe');
         iframe.src = this.getViewerURL(url, extension);
         iframe.id = "tmp-iframe";
-        iframe.className = "fslightbox-source";
+        iframe.className = "fslightbox-source fslightbox-opacity-1";
         iframe.frameBorder = "0";
         iframe.allow = "autoplay; fullscreen";
         iframe.style = "width: 80vw; height: 80vh;";
